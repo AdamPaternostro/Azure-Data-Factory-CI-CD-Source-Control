@@ -1,0 +1,158 @@
+# ADF pipeline that
+# 1. Create the Data Factory resource in Azure
+# 2. Runs the  PowerShell script to disable triggers in ADF
+# 3. Deploys the Data Factory Pipelines
+# 4. Runs the PowerShell script to turn enabled triggers in ADF and deletes old connections/pipelines
+
+trigger: none
+
+parameters:
+- name: ENVIRONMENT
+  displayName: Environment
+  type: string
+  default: QA
+  values:
+  - QA
+  - Prod
+
+- name: ADF_NAME
+  displayName: ADF Name
+  type: string
+  default: 'ADF-MyADFProject-{REPLACE-ME e.g.Feature-A-QA}'
+
+- name: ADF_PUBLISH_FOLDER
+  displayName: ADF Publish Folder Name in Git
+  type: string
+  default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
+
+- name: ADF_LOCATION
+  displayName: Azure Region/Location
+  type: string
+  default: 'SouthCentralUS'
+
+- name: ADF_RESOURCE_GROUP_NAME
+  displayName: Azure Resource Group
+  type: string
+  default: 'ADF-Dev-Ops'
+
+- name: SUBSCRIPTION_ID
+  displayName: Azure Subscription Id
+  type: string
+  default: '00000000-0000-0000-0000-000000000000'
+  
+- name: RESOURCE_MANAGER_CONNECTION
+  displayName: Azure Resource Connection Name
+  type: string
+  default: 'Microsoft Azure Adam Paternostro(00000000-0000-0000-0000-000000000000)'
+
+stages:
+#############################################################
+# Package up the Files (there is nothing to compile like source code)
+#############################################################
+- stage: Build
+  jobs:
+  - job: JobBuild
+    displayName: 'Job Build'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      # Copy the support files (ARM template for the actual ADF and the PowerShell)
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish: Support-Files'
+        inputs:
+          PathtoPublish: '$(Build.Repository.LocalPath)/Support-Files'
+          ArtifactName: Support-Files
+
+      # Change branches
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: |
+            # Write your commands here
+            git checkout adf_publish
+
+      # Copy the adf_publish files
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish: Publish-Files'
+        inputs:
+          PathtoPublish: '$(Build.Repository.LocalPath)/${{ parameters.ADF_PUBLISH_FOLDER }}'
+          ArtifactName: Publish-Files
+
+
+#############################################################
+# Deploy to Environment
+#############################################################
+- stage: DeployToEnvironment
+  jobs:
+  - deployment: DeployToEnvironment
+    displayName: 'Deploy To Env: ${{ parameters.ENVIRONMENT }} ADF: ${{ parameters.ADF_NAME }}'
+    environment: ${{ parameters.ENVIRONMENT }}
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    strategy:
+      runOnce:
+        deploy:  
+          steps:
+            - checkout: none
+
+            ### Show all the environment variables - for debugging ###
+            - task: PowerShell@2
+              displayName: "Current Environment Variables"
+              inputs:
+                targetType: 'inline'
+                script: 'dir env:'
+
+            ### Deploy (or create) the actual Data Factory ###
+            - task: AzureResourceManagerTemplateDeployment@3
+              displayName: Creating Azure ADF
+              inputs:
+                deploymentScope: 'Resource Group'
+                azureResourceManagerConnection: ${{ parameters.RESOURCE_MANAGER_CONNECTION }}
+                subscriptionId: ${{ parameters.SUBSCRIPTION_ID }}
+                action: 'Create Or Update Resource Group'
+                resourceGroupName: ${{ parameters.ADF_RESOURCE_GROUP_NAME }}
+                location: ${{ parameters.ADF_LOCATION }}
+                templateLocation: 'Linked artifact'
+                csmFile: '$(Pipeline.Workspace)/Support-Files/Create-ADF-Template.json'
+                csmParametersFile: '$(Pipeline.Workspace)/Support-Files/Create-ADF-Parameters.json'
+                overrideParameters: '-name ${{ parameters.ADF_NAME }} -location ${{ parameters.ADF_LOCATION }} -apiVersion 2018-06-01'
+                deploymentMode: 'Incremental'
+
+            ### ADF Pre-Deployment - Stop ADF Triggers ###
+            # https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script
+            - task: AzurePowerShell@5
+              displayName: ADF Pre-Deployment
+              inputs:
+                azureSubscription: ${{ parameters.RESOURCE_MANAGER_CONNECTION }}
+                ScriptType: 'FilePath'
+                ScriptPath: '$(Pipeline.Workspace)/Support-Files/Deploy-ADF.ps1'
+                ScriptArguments: '-ResourceGroupName ${{ parameters.ADF_RESOURCE_GROUP_NAME }} -DataFactoryName ${{ parameters.ADF_NAME }} -predeployment $true -deleteDeployment $false -armTemplate $(Pipeline.Workspace)/Publish-Files/ARMTemplateForFactory.json'
+                azurePowerShellVersion: LatestVersion
+                
+            - task: AzureResourceManagerTemplateDeployment@3
+              displayName: Deploy ADF Pipelines
+              inputs:
+                deploymentScope: 'Resource Group'
+                azureResourceManagerConnection: ${{ parameters.RESOURCE_MANAGER_CONNECTION }}
+                subscriptionId: ${{ parameters.SUBSCRIPTION_ID }}
+                action: 'Create Or Update Resource Group'
+                resourceGroupName: ${{ parameters.ADF_RESOURCE_GROUP_NAME }}
+                location: ${{ parameters.ADF_LOCATION }}
+                templateLocation: 'Linked artifact'
+                csmFile: '$(Pipeline.Workspace)/Publish-Files/ARMTemplateForFactory.json'
+                csmParametersFile: '$(Pipeline.Workspace)/Publish-Files/ARMTemplateParametersForFactory.json'
+                overrideParameters: '-factoryName ${{ parameters.ADF_NAME }}'
+                deploymentMode: 'Incremental'
+
+            ### ADF Post-Deployment - Clean up and Start ADF Triggers ###
+            # https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script
+            - task: AzurePowerShell@5
+              displayName: ADF Post-Deployment
+              inputs:
+                azureSubscription: ${{ parameters.RESOURCE_MANAGER_CONNECTION }}
+                ScriptType: 'FilePath'
+                ScriptPath: '$(Pipeline.Workspace)/Support-Files/Deploy-ADF.ps1'
+                ScriptArguments: '-ResourceGroupName ${{ parameters.ADF_RESOURCE_GROUP_NAME }} -DataFactoryName ${{ parameters.ADF_NAME }} -predeployment $false -deleteDeployment $true -armTemplate $(Pipeline.Workspace)/Publish-Files/ARMTemplateForFactory.json'
+                azurePowerShellVersion: LatestVersion
