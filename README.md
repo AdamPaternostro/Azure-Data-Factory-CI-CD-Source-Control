@@ -186,4 +186,5 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 
 ## Overall Considerations
 - Do not edit the same pipeline in two feature branches.  It is really hard to merge pipelines.
+- Have one ADF per application (or logical application).  Avoid having one ADF for lots of lots applications.
 - You are merging JSON not source code.  If you have an activity in a pipeline call Activity-A and you add a Activity-B and link A to B, then in another branch link Activity-A to Activity-C, when you merge, no source control system will link Activity-A to B to C.  Or should it be A to C to B...
