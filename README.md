@@ -162,6 +162,13 @@ Note: When viewing screenshots it is best to right click on open in new tab.
     git merge master
     git push
     ```
+- NOTE: I am not a big fan of doing a publish in Master after the ADF has been tested in the feature branch.  You could do a compare in the adf_publish branch as a sanity check:
+    ```
+    cd MyADFProject
+    git checkout adf_publish
+    git pull
+    git diff adf_publish:./ADF-MyADFProject-Master adf_publish:./ADF-MyADFProject-Feature-A
+    ```
 
 ## Azure
 - In Azure you will have resource that look like the below.  Some companies will deploy QA and Prod to different subscriptions which is fine.  You will need to change your subscription and connection when running the Dev Ops Pipeline (Parameters: Azure Subscription Id and Azure Resource Connection Name).
