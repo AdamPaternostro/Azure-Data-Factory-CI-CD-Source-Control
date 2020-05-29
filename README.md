@@ -10,6 +10,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 ## How to solve this
 - We will be creating a single Git Repo that will be shared by several different ADFs.  Each ADF will treat their branch as their collaboration branch which will create different folders under the adf_publish branch.  Only the development braches will be linked to source control and the QA/Prod deployments will not be linked.
 
+![alt tag](https://raw.githubusercontent.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/master/images/ADFSourceControl.png "ADF Source Control")
 
 ## Create a Master project
 1. In Azure create a resource group: ADF-Dev-Ops
@@ -172,6 +173,9 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 - You can then open ADF, perform the fix and test
 - When tested, merge back to Master, Publish and then deploy
 - Merge Master to Feature-A, Feature-B, etc. to push the change to your feature branches
+
+## Pull Requests
+- Developers can use the ADF UI to create new branches off of each feature branch.  When their work is complete a pull request back to the feature branch can be initiated.
 
 ## Overall Considerations
 - Do not edit the same pipeline in two feature branches.  It is really hard to merge pipelines.
