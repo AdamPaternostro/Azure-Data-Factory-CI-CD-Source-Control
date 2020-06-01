@@ -251,6 +251,21 @@ Note: When viewing screenshots it is best to right click on open in new tab.
       }   
       ```
 
+# DevOps - what happens when pipelines are running and you do a deployment
+- ARM Deployment tests:
+   - Test: Complete ARM deployment of ADF
+      - Result: Kept run history, but I had to combine my templates for my ADF Azure resource and my ADF "pipeline" resource, since Complete overwrites everything
+   - Test: Incremental ARM deployment of ADF
+      - Result: Kept run history
+- Deploying while pipeline is executing tests:
+   - Test: Deploy while running with no changes to pipeline:
+      - Result: Everything was fine, executing pipelines kept running
+   - Test: Deploy while running with changes to pipeline
+      - Result: Everything was fine, executing pipelines kept running
+   - NOTE: I did not test triggers while running and deploying.  I have a feeling you could miss an event if you are not careful.
+- Conclusion - When ADF starts a run, it basically has a copy of the ADF and executes the ADF.  A deployment does not affect existing runs.
+
+
 ## References
 - https://docs.microsoft.com/en-us/azure/data-factory/source-control
 - https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment
