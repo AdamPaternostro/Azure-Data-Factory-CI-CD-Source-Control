@@ -191,6 +191,8 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 
 ## Tips and tricks
 - You can always edit the ADF code in the browser to add/edit the code that the user interface does not currently support.  Not everything in ADF can accept a parameters, but you have adjust this manually for most ADF items.  
+   - https://docs.microsoft.com/en-us/azure/data-factory/parameterize-linked-services#json
+      - At this time, linked service parameterization is supported in the Data Factory UI in the Azure portal for the following data stores. For all other data stores, you can parameterize the linked service by selecting the **Code** icon on the **Connections** tab and using the JSON editor.
    ```
    {
       "properties": {
@@ -209,7 +211,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
       }
    }
    ```
-- Performing DevOps with self-hosted integration runtimes.  You need to use the same name of each self-hosted runtime in each environment (e.g. MyADF-IR and have an IR in your Dev, QA, Prod environments allo named MyADF-IR).
+- Performing DevOps with self-hosted integration runtimes.  You need to use the same name of each self-hosted runtime in each environment (e.g. MyADF-IR and have an IR in your Dev, QA, Prod environments all named MyADF-IR).
    - Per Azure documentation: In CI/CD scenarios, the integration runtime (IR) type in different environments must be the same. For example, if you have a self-hosted IR in the development environment, the same IR must also be of type self-hosted in other environments, such as test and production. Similarly, if you're sharing integration runtimes across multiple stages, you have to configure the integration runtimes as linked self-hosted in all environments, such as development, test, and production.
 
 ## References
