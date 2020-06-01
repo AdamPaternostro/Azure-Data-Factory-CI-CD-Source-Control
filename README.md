@@ -209,7 +209,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
       }
    }
    ```
-- Performing DevOps with self-hosted integration runtimes.  You need to use the same name of each self-hosted runtime in each environment (e.g. MyADF-IR and have an IR in your Dev, QA, Prod environments allo named MyADF-IR).  If you want to change the name per environment (e.g.  MyADF-IR-Dev,  MyADF-IR-QA, MyADF-IR-Prod), you need to use the above techinque to make various items parameters.
+- Performing DevOps with self-hosted integration runtimes.  You need to use the same name of each self-hosted runtime in each environment (e.g. MyADF-IR and have an IR in your Dev, QA, Prod environments allo named MyADF-IR).
    - Per Azure documentation: In CI/CD scenarios, the integration runtime (IR) type in different environments must be the same. For example, if you have a self-hosted IR in the development environment, the same IR must also be of type self-hosted in other environments, such as test and production. Similarly, if you're sharing integration runtimes across multiple stages, you have to configure the integration runtimes as linked self-hosted in all environments, such as development, test, and production.
 
 ## References
