@@ -188,3 +188,30 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 - Do not edit the same pipeline in two feature branches.  It is really hard to merge pipelines.
 - Have one ADF per application (or logical application).  Avoid having one ADF for lots of lots applications.
 - You are merging JSON not source code.  If you have an activity in a pipeline call Activity-A and you add a Activity-B and link A to B, then in another branch link Activity-A to Activity-C, when you merge, no source control system will link Activity-A to B to C.  Or should it be A to C to B...
+
+## Tips and tricks
+- You can always edit the ADF code in the browser to add/edit the code that the user interface does not currently support.  Not everything in ADF can accept a parameters, but you have adjust this manually for most ADF items.  
+   ```
+   {
+      "properties": {
+         "parameters": {
+               "Storage Account Name": {
+                  "type": "string",
+                  "defaultValue": "mystoreageaccount"
+               }
+         },
+         "annotations": [],
+         "type": "AzureBlobFS",
+         "typeProperties": {
+               "url": "https://@{linkedService().Storage Account Name}.dfs.core.windows.net",
+               "encryptedCredential": ""
+         }
+      }
+   }
+   ```
+- Performing DevOps with self-hosted integration runtimes.  You need to use the same name of each self-hosted runtime in each environment (e.g. MyADF-IR and have an IR in your Dev, QA, Prod environments allo named MyADF-IR).  If you want to change the name per environment (e.g.  MyADF-IR-Dev,  MyADF-IR-QA, MyADF-IR-Prod), you need to use the above techinque to make various items parameters.
+   - Per Azure documentation: In CI/CD scenarios, the integration runtime (IR) type in different environments must be the same. For example, if you have a self-hosted IR in the development environment, the same IR must also be of type self-hosted in other environments, such as test and production. Similarly, if you're sharing integration runtimes across multiple stages, you have to configure the integration runtimes as linked self-hosted in all environments, such as development, test, and production.
+
+## References
+- https://docs.microsoft.com/en-us/azure/data-factory/source-control
+- https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment
