@@ -12,6 +12,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 
 ![alt tag](https://raw.githubusercontent.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/master/images/ADFSourceControl.png "ADF Source Control")
 
+
 ## Create a Master project
 1. In Azure create a resource group: ADF-Dev-Ops
 2. Create a Data Factory: ADF-MyADFProject-Master 
@@ -42,6 +43,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 - Summary
    -  We have created the master branch, linked to source control, have uploaded 3 files which will be used for our deployments and now have a dev ops pipeline.  The 3 support files contains the ARM template to create a new ADF resource in Azure and an ADF PowerShell deployment script.
 
+
 ## Create a Feature-A Branch
 1. In source control create a new branch from master called: Feature-A [Click for Screenshot](https://raw.githubusercontent.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/master/images/Create-Feature-Branch-A.png "Create-Feature-Branch-A")
 2. Create a Data Factory: ADF-MyADFProject-Feature-A
@@ -64,8 +66,10 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 - Summary
    -  We have created a development Feature A environment.  This is where we will develop our data factory pipelines.
 
+
 ## Create a Feature-B Branch
 - You may create a Feature-B branch by doing the same steps are above.  This is optional for now.
+
 
 ## Decision for QA Environment
 - We now want to deploy to QA
@@ -76,6 +80,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 - A possible issue with having a mulitple feature QA environments might be conflicts.  Pipeline-1 in feature A and B might run at the 8 PM and could collide.  Or if you have triggers you might run into collisions.
    - I **never** use ADF triggers for blobs.  You can read why here on slide 6 in the Azure-Big-Data-Architecture.pptx PowerPoint here: https://github.com/AdamPaternostro/Azure-Big-Data-and-Machine-Learning-Architecture 
 - Personally, I prefer multiple QA environments to keep things easy to test and take advantage of the cloud's abilty for me to create the resources I require.
+
 
 ## Deploy Feature A branch to QA
 - Update Feature A branch with any changes (or hotfixes) from Master (Prod)
@@ -97,6 +102,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
     ```
 - Manually publish the ADF
   - In the Data Factory UI for ADF-MyADFProject-Feature-A click on the Publish button (just as you did before).  You can skip this step if nothing was merged from Master    
+
 
 ## To Deploy to QA
 - Open your Azure Dev Ops Project
@@ -124,6 +130,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
    - The data factory will have the triggers enabled and any old pipelines artifacts will be deleted
    - An environment in Azure Dev Ops has been created named "QA"
 - If fixes needed to be performed to feature-a, make the corrections, publish and re-deploy using the pipeline
+
 
 # QA was tested successfully, let's deploy to Prod
 - If everything is good with Feature-A we now will deploy to Prod
@@ -170,6 +177,7 @@ Note: When viewing screenshots it is best to right click on open in new tab.
     git diff adf_publish:./ADF-MyADFProject-Master adf_publish:./ADF-MyADFProject-Feature-A
     ```
 
+
 ## Azure
 - In Azure you will have resource that look like the below.  Some companies will deploy QA and Prod to different subscriptions which is fine.  You will need to change your subscription and connection when running the Dev Ops Pipeline (Parameters: Azure Subscription Id and Azure Resource Connection Name).
 ![alt tag](https://raw.githubusercontent.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/master/images/Data-Factories-In-Azure.png "Data-Factories-In-Azure")
@@ -181,13 +189,16 @@ Note: When viewing screenshots it is best to right click on open in new tab.
 - When tested, merge back to Master, Publish and then deploy
 - Merge Master to Feature-A, Feature-B, etc. to push the change to your feature branches
 
+
 ## Pull Requests
 - Developers can use the ADF UI to create new branches off of each feature branch.  When their work is complete a pull request back to the feature branch can be initiated.
+
 
 ## Overall Considerations
 - Do not edit the same pipeline in two feature branches.  It is really hard to merge pipelines.
 - Have one ADF per application (or logical application).  Avoid having one ADF for lots of lots applications.
 - You are merging JSON not source code.  If you have an activity in a pipeline call Activity-A and you add a Activity-B and link A to B, then in another branch link Activity-A to Activity-C, when you merge, no source control system will link Activity-A to B to C.  Or should it be A to C to B...
+
 
 ## Tips and tricks
 - You can always edit the ADF code in the browser to add/edit the code that the user interface does not currently support.  Not everything in ADF can accept a parameters, but you have adjust this manually for most ADF items.  
@@ -213,6 +224,32 @@ Note: When viewing screenshots it is best to right click on open in new tab.
    ```
 - Performing DevOps with self-hosted integration runtimes.  You need to use the same name of each self-hosted runtime in each environment (e.g. MyADF-IR and have an IR in your Dev, QA, Prod environments all named MyADF-IR).
    - Per Azure documentation: In CI/CD scenarios, the integration runtime (IR) type in different environments must be the same. For example, if you have a self-hosted IR in the development environment, the same IR must also be of type self-hosted in other environments, such as test and production. Similarly, if you're sharing integration runtimes across multiple stages, you have to configure the integration runtimes as linked self-hosted in all environments, such as development, test, and production.
+   - Note: At this time you cannot make the IR name a parameter.  This DOES NOT work:
+      ```
+      {
+         "name": "LaptopMenuData",
+         "type": "Microsoft.DataFactory/factories/linkedservices",
+         "properties": {
+            "parameters": {
+                  "IRName": {
+                     "type": "string",
+                     "defaultValue": "AdamLaptop"
+                  }
+            },
+            "annotations": [],
+            "type": "FileServer",
+            "typeProperties": {
+                  "host": "C:\\Menu-Data",
+                  "userId": "ADAM-DESKTOP-PC\\azuredatafactory",
+                  "encryptedCredential": ""
+            },
+            "connectVia": {
+                  "referenceName": "@{linkedService().IRName}",  *** DOES NOT WORK ***
+                  "type": "IntegrationRuntimeReference"
+            }
+         }
+      }   
+      ```
 
 ## References
 - https://docs.microsoft.com/en-us/azure/data-factory/source-control
