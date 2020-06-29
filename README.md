@@ -8,7 +8,7 @@ ADF generates ARM templates in order to deploy your pipelines.  There is only on
 Note: When viewing screenshots it is best to right click on open in new tab.
 
 ## How to solve this
-- We will be creating a single Git Repo that will be shared by several different ADFs.  Each ADF will treat their branch as their collaboration branch which will create different folders under the adf_publish branch.  Only the development braches will be linked to source control and the QA/Prod deployments will not be linked.
+- We will be creating a single Git Repo that will be shared by several different ADFs (all for the same set of pipelines).  Each ADF will treat their branch as their collaboration branch which will create different folders under the adf_publish branch.  Only the development braches will be linked to source control and the QA/Prod deployments will not be linked.
 
 ![alt tag](https://raw.githubusercontent.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/master/images/ADFSourceControl.png "ADF Source Control")
 
