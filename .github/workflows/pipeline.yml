@@ -96,7 +96,6 @@ jobs:
   Dev:
     needs: Build
     runs-on: ubuntu-latest
-    env:
 
     steps:
     # Show the environment variables for debugging
@@ -144,3 +143,11 @@ jobs:
         inlineScript: |
           az group create --location "${{ github.event.inputs.LOCATION }}" --name "${{ github.event.inputs.RESOURCE_GROUP }}"
           az deployment group create --resource-group ${{ github.event.inputs.RESOURCE_GROUP }} --template-file $GITHUB_WORKSPACE/ARM-Templates/Create-ADF-Template.json --parameters @$GITHUB_WORKSPACE/ARM-Templates/Create-ADF-Parameters.json --parameters name="${{ github.event.inputs.ADF_NAME }}"
+
+    # ADF Pre-Deployment - Stop ADF Triggers
+    - name: ADF Pre-Deployment - Stop ADF Triggers
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          dir env:
+        azPSVersion: '3.1.0'              
