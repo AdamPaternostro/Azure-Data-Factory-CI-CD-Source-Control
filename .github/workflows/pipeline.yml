@@ -72,7 +72,7 @@ jobs:
 
     # Change branches
     - name: Change branches to adf_publish
-      run: git checkout adf_publish
+      run: git fetch | git checkout adf_publish
       shell: bash
 
     # Publish Artifact: adf_publish files
