@@ -77,11 +77,10 @@ jobs:
       with:
         path: adf_publish
 
-    # Change branches
-    #- name: Change branches to adf_publish
-    #  run: git checkout adf_publish
-    #  shell: bash
-
+    # Show paths
+    - name: Show paths
+      run: ls -R
+    
     # Publish Artifact: adf_publish files
     - name: 'Publish Artifact: adf_publish Files (Dev)' 
       uses: actions/upload-artifact@v2
