@@ -4,15 +4,15 @@ name: ADF-CI-CD
 on:
   workflow_dispatch:
     inputs:
-      # Name of the ADF Azure Resource
+      # Name of your Azure ADF
       ADF_NAME:
-        description: 'ADF Name'
+        description: 'ADF Name to Deploy'
         required: true
-        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A-QA}'
+        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
 
-      # This will Dev, QA and Prod appended
+      # Name of the publish folder under adf_publish bnrach
       ADF_PUBLISH_FOLDER:
-        description: 'ADF Publish Folder Name in Git'
+        description: 'ADF Publish Folder Name in Git (under adf_publish branch)'
         required: true
         default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
 
@@ -20,7 +20,7 @@ on:
       RESOURCE_GROUP:
         description: 'Resource Group Name'
         required: true
-        default: 'ADF-MyADFProject'
+        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
 
       # The Azure region to which to deploy your resources
       LOCATION:
@@ -86,5 +86,5 @@ jobs:
     - name: 'Publish Artifact: adf_publish' 
       uses: actions/upload-artifact@v2
       with:
-        name: 'ADF-Publish-Dev'
+        name: 'Publish-Files'
         path: '${{ github.workspace }}/${{ github.event.inputs.ADF_PUBLISH_FOLDER }}'

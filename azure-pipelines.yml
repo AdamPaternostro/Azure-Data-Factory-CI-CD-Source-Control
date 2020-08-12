@@ -134,7 +134,7 @@ stages:
               inputs:
                 azureSubscription: ${{ parameters.RESOURCE_MANAGER_CONNECTION }}
                 ScriptType: 'FilePath'
-                ScriptPath: '$(Pipeline.Workspace)/ARM-Templates/Deploy-ADF.ps1'
+                ScriptPath: '$(Pipeline.Workspace)/PowerShell-Scripts/Deploy-ADF.ps1'
                 ScriptArguments: '-ResourceGroupName ${{ parameters.ADF_RESOURCE_GROUP_NAME }} -DataFactoryName ${{ parameters.ADF_NAME }} -predeployment $true -deleteDeployment $false -armTemplate $(Pipeline.Workspace)/Publish-Files/ARMTemplateForFactory.json'
                 azurePowerShellVersion: LatestVersion
                 
@@ -160,6 +160,6 @@ stages:
               inputs:
                 azureSubscription: ${{ parameters.RESOURCE_MANAGER_CONNECTION }}
                 ScriptType: 'FilePath'
-                ScriptPath: '$(Pipeline.Workspace)/ARM-Templates/Deploy-ADF.ps1'
+                ScriptPath: '$(Pipeline.Workspace)/PowerShell-Scripts/Deploy-ADF.ps1'
                 ScriptArguments: '-ResourceGroupName ${{ parameters.ADF_RESOURCE_GROUP_NAME }} -DataFactoryName ${{ parameters.ADF_NAME }} -predeployment $false -deleteDeployment $true -armTemplate $(Pipeline.Workspace)/Publish-Files/ARMTemplateForFactory.json'
                 azurePowerShellVersion: LatestVersion
