@@ -45,8 +45,10 @@ jobs:
 
     # Checkout code
     steps:
-    - name: Checkout code
+    - name: Checkout Master branch
       uses: actions/checkout@v2
+      with:
+        path: master
 
     # Show the environment variables for debugging
     - name: Display Environment Variable
@@ -70,10 +72,15 @@ jobs:
         name: 'PowerShell-Scripts'
         path: '${{ github.workspace }}/PowerShell-Scripts'
 
+    - name: Checkout adf_publish branch
+      uses: actions/checkout@v2
+      with:
+        path: adf_publish
+
     # Change branches
-    - name: Change branches to adf_publish
-      run: git fetch | git checkout adf_publish
-      shell: bash
+    #- name: Change branches to adf_publish
+    #  run: git checkout adf_publish
+    #  shell: bash
 
     # Publish Artifact: adf_publish files
     - name: 'Publish Artifact: adf_publish Files (Dev)' 
