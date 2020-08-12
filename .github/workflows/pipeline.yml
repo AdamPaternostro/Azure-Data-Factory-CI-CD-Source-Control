@@ -1,0 +1,82 @@
+name: ADF-CI-CD
+
+# Manual trigger with parameters
+on:
+  workflow_dispatch:
+    inputs:
+      # ???
+      ADF_NAME:
+        description: 'ADF Name'
+        required: true
+        default: 'ADF-MyADFProject-{REPLACE-ME e.g.Feature-A-QA}'
+
+      # ???
+      ADF_PUBLISH_FOLDER:
+        description: 'ADF Publish Folder Name in Git'
+        required: true
+        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
+
+      # This resource group for the ADF
+      RESOURCE_GROUP:
+        description: 'Resource Group Name'
+        required: true
+        default: 'ADF-Dev-Ops'
+
+      # The Azure region to which to deploy your resources
+      LOCATION:
+        description: 'Azure Region'
+        required: true
+        default: 'SouthCentralUS'
+
+      # This is a KeyVault for holding the Service Principal to make Databricks API calls and to hold Databricks KeyVault backed Secrets
+      SUBSCRIPTION_ID:
+        description: 'Azure Subscription Id'
+        required: true
+        default: '00000000-0000-0000-0000-000000000000'
+
+jobs:
+  #############################################################
+  # Builds the code
+  # This is packaging up the files from Git to the Artifacts files
+  #############################################################
+  Build:
+    runs-on: ubuntu-latest
+
+    # Checkout code
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Show the environment variables for debugging
+    - name: Display Environment Variable
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          dir env:
+        azPSVersion: '3.1.0'
+
+    # Publish Artifact: Publish: Support-Files
+    - name: 'Publish Artifact: Support-Files (ARM Templates)' 
+      uses: actions/upload-artifact@v2
+      with:
+        name: 'Support-Files'
+        path: '${{ github.workspace }}/Support-Files'
+
+    # Change branches
+    - name: Change branches
+      with:
+        inlineScript: |
+          git checkout adf_publish
+
+    # Copy the adf_publish files
+    - name: Copy the adf_publish files
+      with:
+        inlineScript: |
+          git checkout adf_publish
+
+    # Publish Artifact: adf_publish files
+    - name: 'Publish Artifact: adf_publish Files' 
+      uses: actions/upload-artifact@v2
+      with:
+        name: 'Publish-Files'
+        path: '${{ github.workspace }}/${{ github.ADF_PUBLISH_FOLDER }}'
