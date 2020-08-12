@@ -20,22 +20,20 @@ Note: When viewing screenshots it is best to right click on open in new tab.
    - This will be our master data factory that will be used to Publish our Production data factory ARM templates.
    - Developers will never code here
    - You will replace ADF-MyADFProject with your real project name.  Keep the "-Master" suffix to you can keep track of your resources.
-2. Create a Azure Dev Ops (or GitHub) project: MyADFProject
-   - If you use GitHub you still need an Azure Dev Ops for the release pipeline (unless you re-code this with GitHub actions)
+2. Create a Azure Dev Ops or GitHub project: MyADFProject
 3. Open the ADF (UI): ADF-MyADFProject-Master 
 4. Click on the link to source control [Click for Screenshot](https://raw.githubusercontent.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/master/images/Link-To-Source-Control.png "screenshot")
    - Configure
        - Set the Collaboration branch to **Master** [Click for Screenshot](https://raw.githubusercontent.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/master/images/Link-ADF-Master-To-Git.png "Link-ADF-Master-To-Git")
        - You only need the Import button check if you are doing this for an existing ADF
 5. Download these three files
-   - [Create-ADF-Parameters.json](./Support-Files/Create-ADF-Parameters.json "Create-ADF-Parameters.json") 
-   - [Create-ADF-Template.json](./Support-Files/Create-ADF-Template.json "Create-ADF-Template.json") 
-   - [Deploy-ADF.ps1](./Support-Files/Deploy-ADF.ps1 "Deploy-ADF.ps1") 
+   - [Create-ADF-Parameters.json](./ARM-Templates/Create-ADF-Parameters.json "Create-ADF-Parameters.json") 
+   - [Create-ADF-Template.json](.ARM-Templates/Create-ADF-Template.json "Create-ADF-Template.json") 
+   - [Deploy-ADF.ps1](./PowerShell-Scripts/Deploy-ADF.ps1 "Deploy-ADF.ps1") 
       - The latest script is here: https://docs.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment#script
-   - Place them in a folder named "Support-Files"
 6. In your Git repo
-   - Create a folder named "Support-Files"
-   - Upload the 3 files into the folder
+   - Place the JSON in an "ARM-Templates" folder
+   - Place the PS1 in a "PowerShell-Scripts" folder
 7. Download the Azure Dev Ops Pipeline file that will do our deployment
    - [azure-pipelines.yml](./azure-pipelines.yml "azure-pipelines.yml") 
 8. In your Git Repo

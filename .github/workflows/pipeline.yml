@@ -36,7 +36,6 @@ on:
 
 jobs:
   #############################################################
-  # Builds the code
   # This is packaging up the files from Git to the Artifacts files
   #############################################################
   Build:
@@ -88,3 +87,60 @@ jobs:
       with:
         name: 'Publish-Files'
         path: '${{ github.workspace }}/${{ github.event.inputs.ADF_PUBLISH_FOLDER }}'
+
+
+        
+#############################################################
+# Deploy 
+#############################################################
+  Dev:
+    needs: Build
+    runs-on: ubuntu-latest
+    env:
+
+    steps:
+    # Show the environment variables for debugging
+    - name: Display Environment Variable
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          dir env:
+        azPSVersion: '3.1.0'        
+
+    # Download Artifact: ARM-Templates
+    - name: 'Download Artifact: ARM-Templates' 
+      uses: actions/download-artifact@v2
+      with:
+        name: 'ARM-Templates'
+        path: ${{ github.workspace }}/ARM-Templates
+
+    # Download Artifact:PowerShell-Scripts
+    - name: 'Download Artifact: PowerShell-Scripts' 
+      uses: actions/download-artifact@v2
+      with:
+        name: 'PowerShell-Scripts'
+        path: ${{ github.workspace }}/PowerShell-Scripts
+
+    # Download Artifact: Publish-Files
+    - name: 'Download Artifact: Publish-Files' 
+      uses: actions/download-artifact@v2
+      with:
+        name: 'Publish-Files'
+        path: ${{ github.workspace }}/Publish-Files
+
+    # Login to Azure
+    - name: Login via Az module
+      uses: azure/login@v1.1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        # set this if you will be using PowerShell
+        enable-AzPSSession: true 
+
+    # Deploy ADF Azure Resource
+    - name: Deploy ARM Template (ADF)
+      uses: azure/CLI@v1
+      # if: ${{ github.event.inputs.MODE == 'SKIP FOR TESTING' }}
+      with:
+        inlineScript: |
+          az group create --location "${{ github.event.inputs.LOCATION }}" --name "${{ github.event.inputs.RESOURCE_GROUP }}"
+          az deployment group create --resource-group ${{ github.event.inputs.RESOURCE_GROUP }} --template-file $GITHUB_WORKSPACE/ARM-Templates/Create-ADF-Template.json --parameters @$GITHUB_WORKSPACE/ARM-Templates/Create-ADF-Parameters.json --parameters name="${{ github.event.inputs.ADF_NAME }}"
