@@ -4,23 +4,24 @@ name: ADF-CI-CD
 on:
   workflow_dispatch:
     inputs:
-      # ???
+      # Name of the ADF Azure Resource
+      # This will Dev, QA and Prod appended
       ADF_NAME:
         description: 'ADF Name'
         required: true
-        default: 'ADF-MyADFProject-{REPLACE-ME e.g.Feature-A-QA}'
+        default: 'ADF-MyADFProject'
 
-      # ???
-      ADF_PUBLISH_FOLDER:
-        description: 'ADF Publish Folder Name in Git'
-        required: true
-        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
+      # This will Dev, QA and Prod appended
+      # ADF_PUBLISH_FOLDER:
+      #  description: 'ADF Publish Folder Name in Git'
+      #  required: true
+      #  default: 'ADF-MyADFProject'
 
       # This resource group for the ADF
       RESOURCE_GROUP:
         description: 'Resource Group Name'
         required: true
-        default: 'ADF-Dev-Ops'
+        default: 'ADF-MyADFProject'
 
       # The Azure region to which to deploy your resources
       LOCATION:
@@ -28,7 +29,7 @@ on:
         required: true
         default: 'SouthCentralUS'
 
-      # This is a KeyVault for holding the Service Principal to make Databricks API calls and to hold Databricks KeyVault backed Secrets
+      # ???
       SUBSCRIPTION_ID:
         description: 'Azure Subscription Id'
         required: true
@@ -55,28 +56,43 @@ jobs:
           dir env:
         azPSVersion: '3.1.0'
 
-    # Publish Artifact: Publish: Support-Files
-    - name: 'Publish Artifact: Support-Files (ARM Templates)' 
+    # Publish Artifact: Publish: ARM-Templates
+    - name: 'Publish Artifact: ARM-Templates' 
       uses: actions/upload-artifact@v2
       with:
-        name: 'Support-Files'
-        path: '${{ github.workspace }}/Support-Files'
+        name: 'ARM-Templates'
+        path: '${{ github.workspace }}/ARM-Templates'
+
+    # Publish Artifact: Publish: PowerShell-Scripts
+    - name: 'Publish Artifact: PowerShell-Scripts' 
+      uses: actions/upload-artifact@v2
+      with:
+        name: 'PowerShell-Scripts'
+        path: '${{ github.workspace }}/PowerShell-Scripts'
 
     # Change branches
-    - name: Change branches
-      with:
-        inlineScript: |
-          git checkout adf_publish
-
-    # Copy the adf_publish files
-    - name: Copy the adf_publish files
+    - name: Change branches to adf_publish
       with:
         inlineScript: |
           git checkout adf_publish
 
     # Publish Artifact: adf_publish files
-    - name: 'Publish Artifact: adf_publish Files' 
+    - name: 'Publish Artifact: adf_publish Files (Dev)' 
       uses: actions/upload-artifact@v2
       with:
         name: 'Publish-Files'
-        path: '${{ github.workspace }}/${{ github.ADF_PUBLISH_FOLDER }}'
+        path: '${{ github.workspace }}/${{ github.ADF_NAME }}-Dev'
+
+    # Publish Artifact: adf_publish files
+    - name: 'Publish Artifact: adf_publish Files (QA)' 
+      uses: actions/upload-artifact@v2
+      with:
+        name: 'Publish-Files'
+        path: '${{ github.workspace }}/${{ github.ADF_NAME }}-QA'
+
+    # Publish Artifact: adf_publish files
+    - name: 'Publish Artifact: adf_publish Files (Prod)' 
+      uses: actions/upload-artifact@v2
+      with:
+        name: 'Publish-Files'
+        path: '${{ github.workspace }}/${{ github.ADF_NAME }}-Prod'        

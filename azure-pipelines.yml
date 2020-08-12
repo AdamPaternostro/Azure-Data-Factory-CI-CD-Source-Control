@@ -59,10 +59,17 @@ stages:
     steps:
       # Copy the support files (ARM template for the actual ADF and the PowerShell)
       - task: PublishBuildArtifacts@1
-        displayName: 'Publish: Support-Files'
+        displayName: 'Publish: ARM-Templates'
         inputs:
-          PathtoPublish: '$(Build.Repository.LocalPath)/Support-Files'
-          ArtifactName: Support-Files
+          PathtoPublish: '$(Build.Repository.LocalPath)/ARM-Templates'
+          ArtifactName: ARM-Templates
+
+      # Copy the PowerShell files (for starting/stopping tiggers and cleaning ADF)
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish: PowerShell-Scripts'
+        inputs:
+          PathtoPublish: '$(Build.Repository.LocalPath)/PowerShell-Scripts'
+          ArtifactName: PowerShell-Scripts
 
       # Change branches
       - task: Bash@3
@@ -115,8 +122,8 @@ stages:
                 resourceGroupName: ${{ parameters.ADF_RESOURCE_GROUP_NAME }}
                 location: ${{ parameters.ADF_LOCATION }}
                 templateLocation: 'Linked artifact'
-                csmFile: '$(Pipeline.Workspace)/Support-Files/Create-ADF-Template.json'
-                csmParametersFile: '$(Pipeline.Workspace)/Support-Files/Create-ADF-Parameters.json'
+                csmFile: '$(Pipeline.Workspace)/ARM-Templates/Create-ADF-Template.json'
+                csmParametersFile: '$(Pipeline.Workspace)/ARM-Templates/Create-ADF-Parameters.json'
                 overrideParameters: '-name ${{ parameters.ADF_NAME }} -location ${{ parameters.ADF_LOCATION }} -apiVersion 2018-06-01'
                 deploymentMode: 'Incremental'
 
@@ -127,7 +134,7 @@ stages:
               inputs:
                 azureSubscription: ${{ parameters.RESOURCE_MANAGER_CONNECTION }}
                 ScriptType: 'FilePath'
-                ScriptPath: '$(Pipeline.Workspace)/Support-Files/Deploy-ADF.ps1'
+                ScriptPath: '$(Pipeline.Workspace)/ARM-Templates/Deploy-ADF.ps1'
                 ScriptArguments: '-ResourceGroupName ${{ parameters.ADF_RESOURCE_GROUP_NAME }} -DataFactoryName ${{ parameters.ADF_NAME }} -predeployment $true -deleteDeployment $false -armTemplate $(Pipeline.Workspace)/Publish-Files/ARMTemplateForFactory.json'
                 azurePowerShellVersion: LatestVersion
                 
@@ -153,6 +160,6 @@ stages:
               inputs:
                 azureSubscription: ${{ parameters.RESOURCE_MANAGER_CONNECTION }}
                 ScriptType: 'FilePath'
-                ScriptPath: '$(Pipeline.Workspace)/Support-Files/Deploy-ADF.ps1'
+                ScriptPath: '$(Pipeline.Workspace)/ARM-Templates/Deploy-ADF.ps1'
                 ScriptArguments: '-ResourceGroupName ${{ parameters.ADF_RESOURCE_GROUP_NAME }} -DataFactoryName ${{ parameters.ADF_NAME }} -predeployment $false -deleteDeployment $true -armTemplate $(Pipeline.Workspace)/Publish-Files/ARMTemplateForFactory.json'
                 azurePowerShellVersion: LatestVersion
