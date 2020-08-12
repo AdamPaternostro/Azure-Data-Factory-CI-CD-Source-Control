@@ -28,7 +28,7 @@ on:
         required: true
         default: 'SouthCentralUS'
 
-      # ???
+      # For running PowerShell and creating resources
       SUBSCRIPTION_ID:
         description: 'Azure Subscription Id'
         required: true
@@ -44,7 +44,7 @@ jobs:
 
     # Checkout code
     steps:
-    - name: Checkout Master branch
+    - name: Checkout repo
       uses: actions/checkout@v2
 
     # Show paths
@@ -82,6 +82,13 @@ jobs:
     - name: Show paths
       run: ls -R
     
+    - name: Switch Branches
+      run: git checkout adf_publish
+
+    # Show paths
+    - name: Show paths
+      run: ls -R
+
     # Publish Artifact: adf_publish files
     - name: 'Publish Artifact: adf_publish' 
       uses: actions/upload-artifact@v2
