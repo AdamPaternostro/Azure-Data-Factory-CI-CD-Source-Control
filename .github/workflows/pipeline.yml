@@ -5,17 +5,16 @@ on:
   workflow_dispatch:
     inputs:
       # Name of the ADF Azure Resource
-      # This will Dev, QA and Prod appended
       ADF_NAME:
         description: 'ADF Name'
         required: true
-        default: 'ADF-MyADFProject'
+        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A-QA}'
 
       # This will Dev, QA and Prod appended
-      # ADF_PUBLISH_FOLDER:
-      #  description: 'ADF Publish Folder Name in Git'
-      #  required: true
-      #  default: 'ADF-MyADFProject'
+      ADF_PUBLISH_FOLDER:
+        description: 'ADF Publish Folder Name in Git'
+        required: true
+        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
 
       # This resource group for the ADF
       RESOURCE_GROUP:
@@ -47,8 +46,10 @@ jobs:
     steps:
     - name: Checkout Master branch
       uses: actions/checkout@v2
-      with:
-        path: master
+
+    # Show paths
+    - name: Show paths
+      run: ls -R
 
     # Show the environment variables for debugging
     - name: Display Environment Variable
@@ -82,22 +83,8 @@ jobs:
       run: ls -R
     
     # Publish Artifact: adf_publish files
-    - name: 'Publish Artifact: adf_publish Files (Dev)' 
+    - name: 'Publish Artifact: adf_publish' 
       uses: actions/upload-artifact@v2
       with:
         name: 'ADF-Publish-Dev'
-        path: '${{ github.workspace }}/${{ github.event.inputs.ADF_NAME }}-Dev'
-
-    # Publish Artifact: adf_publish files
-    - name: 'Publish Artifact: adf_publish Files (QA)' 
-      uses: actions/upload-artifact@v2
-      with:
-        name: 'ADF-Publish-QA'
-        path: '${{ github.workspace }}/${{ github.event.inputs.ADF_NAME }}-QA'
-
-    # Publish Artifact: adf_publish files
-    - name: 'Publish Artifact: adf_publish Files (Prod)' 
-      uses: actions/upload-artifact@v2
-      with:
-        name: 'ADF-Publish-Prod'
-        path: '${{ github.workspace }}/${{ github.event.inputs.ADF_NAME }}-Prod'        
+        path: '${{ github.workspace }}/${{ github.event.inputs.ADF_PUBLISH_FOLDER }}'
