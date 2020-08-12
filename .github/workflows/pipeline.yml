@@ -75,16 +75,8 @@ jobs:
 
     - name: Checkout adf_publish branch
       uses: actions/checkout@v2
-      with:
-        path: adf_publish
-
-    # Show paths
-    - name: Show paths
-      run: ls -R
-    
-    - name: Switch Branches
       run: git checkout adf_publish
-
+      
     # Show paths
     - name: Show paths
       run: ls -R
