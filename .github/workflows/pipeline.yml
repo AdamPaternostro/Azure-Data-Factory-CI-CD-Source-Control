@@ -86,19 +86,19 @@ jobs:
     - name: 'Publish Artifact: adf_publish Files (Dev)' 
       uses: actions/upload-artifact@v2
       with:
-        name: 'Publish-Files'
+        name: 'ADF-Publish-Dev'
         path: '${{ github.workspace }}/${{ github.ADF_NAME }}-Dev'
 
     # Publish Artifact: adf_publish files
     - name: 'Publish Artifact: adf_publish Files (QA)' 
       uses: actions/upload-artifact@v2
       with:
-        name: 'Publish-Files'
+        name: 'ADF-Publish-QA'
         path: '${{ github.workspace }}/${{ github.ADF_NAME }}-QA'
 
     # Publish Artifact: adf_publish files
     - name: 'Publish Artifact: adf_publish Files (Prod)' 
       uses: actions/upload-artifact@v2
       with:
-        name: 'Publish-Files'
+        name: 'ADF-Publish-Prod'
         path: '${{ github.workspace }}/${{ github.ADF_NAME }}-Prod'        
