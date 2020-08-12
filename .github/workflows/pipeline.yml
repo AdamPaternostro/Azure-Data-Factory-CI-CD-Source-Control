@@ -26,7 +26,7 @@ on:
       LOCATION:
         description: 'Azure Region'
         required: true
-        default: 'SouthCentralUS'
+        default: 'EastUS2'
 
       # For running PowerShell and creating resources
       SUBSCRIPTION_ID:
