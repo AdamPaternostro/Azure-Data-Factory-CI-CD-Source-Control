@@ -1,6 +1,9 @@
 # Azure-Data-Factory-CI-CD-Source-Control
 Lots of people have asked how to have many feature branches with Azure Data Factory and there are challenges with the single ADF Publish branch Data Factory utilizes.  By default ADF uses the GitHub Flow for branching, but most of my customers want Git Flow for branching (feature branches with different deployments).  See this [link](https://lucamezzalira.com/2014/03/10/git-flow-vs-github-flow/ "(link)") for Git Flow versus GitHub Flow. 
 
+[![Actions Status](https://github.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/workflows/ADF-CI-CD/badge.svg)](https://github.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/actions)
+
+
 ADF generates ARM templates in order to deploy your pipelines.  There is only one ADF Publish branch which causes issues if you are wanting different features during development.  Each feature needs to be tested/deployed seperately before merging to the collaboration branch where you typically publish.  Plus, most organizations think they will be deploying Feature A before Feature B, but priorities sometimes change. External forces can cause Feature B to be scheduled for release before Feature A.
 
 ![alt tag](https://raw.githubusercontent.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/master/images/CurrentIssue.png "Current Issue")
