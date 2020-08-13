@@ -8,19 +8,19 @@ on:
       ADF_NAME:
         description: 'ADF Name to Deploy'
         required: true
-        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
+        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A-QA}'
 
       # Name of the publish folder under adf_publish bnrach
       ADF_PUBLISH_FOLDER:
         description: 'ADF Publish Folder Name in Git (under adf_publish branch)'
         required: true
-        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
+        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A-QA}'
 
       # This resource group for the ADF
       RESOURCE_GROUP:
         description: 'Resource Group Name'
         required: true
-        default: 'ADF-MyADFProject-{REPLACE-ME e.g. Feature-A}'
+        default: 'ADF-Dev-Ops'
 
       # The Azure region to which to deploy your resources
       LOCATION:
@@ -144,10 +144,19 @@ jobs:
           az group create --location "${{ github.event.inputs.LOCATION }}" --name "${{ github.event.inputs.RESOURCE_GROUP }}"
           az deployment group create --resource-group ${{ github.event.inputs.RESOURCE_GROUP }} --template-file $GITHUB_WORKSPACE/ARM-Templates/Create-ADF-Template.json --parameters @$GITHUB_WORKSPACE/ARM-Templates/Create-ADF-Parameters.json --parameters name="${{ github.event.inputs.ADF_NAME }}"
 
+    # Currently there is not an Azure PowerShell Action for calling a PowerShell script file.  This is inline for now...
     # ADF Pre-Deployment - Stop ADF Triggers
-    - name: ADF Pre-Deployment - Stop ADF Triggers
-      uses: azure/powershell@v1
+    #- name: ADF Pre-Deployment - Stop ADF Triggers
+    #  uses: azure/powershell@v1
+    #  with:
+    #    inlineScript: |
+    #      dir env:
+    #    azPSVersion: '3.1.0'              
+
+    # Deploy ADF items
+    - name: Deploy ADF Artifacts (Pipelines)
+      uses: azure/CLI@v1
+      # if: ${{ github.event.inputs.MODE == 'SKIP FOR TESTING' }}
       with:
         inlineScript: |
-          dir env:
-        azPSVersion: '3.1.0'              
+          az deployment group create --resource-group ${{ github.event.inputs.RESOURCE_GROUP }} --template-file $GITHUB_WORKSPACE/Publish-Files/ARMTemplateForFactory.json --parameters @$GITHUB_WORKSPACE/Publish-Files/ARMTemplateParametersForFactory.json --parameters factoryName="${{ github.event.inputs.ADF_NAME }}"
