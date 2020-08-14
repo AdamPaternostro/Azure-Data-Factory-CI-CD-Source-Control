@@ -1,0 +1,17 @@
+{
+	"name": "Feature-A-Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "FeatureAWaitActivity",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
+		"annotations": []
+	}
+}
