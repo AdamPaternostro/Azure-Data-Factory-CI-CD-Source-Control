@@ -3,15 +3,6 @@ Lots of people have asked how to have many feature branches with Azure Data Fact
 
 [![Actions Status](https://github.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/workflows/ADF-CI-CD/badge.svg)](https://github.com/AdamPaternostro/Azure-Data-Factory-CI-CD-Source-Control/actions)
 
-## Videos
-![alt tag](https://raw.githubusercontent.com/AdamPaternostro//Azure-Data-Factory-CI-CD-Source-Control/master/images/YouTube.png)
-| Description  |  URL |
-|:-------------|:------|
-| Overview | Coming soon |
-| Setup | Coming soon |
-| Feature Branching | Coming soon |
-| HotFix Branching | Coming soon |
-
 ## ADF's Apporach to Source Control
 ADF generates ARM templates in order to deploy your pipelines.  There is only one ADF Publish branch which causes issues if you are wanting different features during development.  Each feature needs to be tested/deployed seperately before merging to the collaboration branch where you typically publish.  Plus, most organizations think they will be deploying Feature A before Feature B, but priorities sometimes change. External forces can cause Feature B to be scheduled for release before Feature A.
 
